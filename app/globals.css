@@ -1,26 +1,331 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ==========================================================================
+   SES design tokens
+   Every color, radius, type size and easing lives here. Components only use
+   the Tailwind names mapped in @theme below (bg-bg, text-text-2, rounded-card…).
+   ========================================================================== */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  color-scheme: light dark;
+
+  /* Surfaces & text: light */
+  --bg: #fbfbfd;
+  --surface: #ffffff;
+  --surface-2: #f5f5f7;
+  --text: #1d1d1f;
+  --text-2: #6e6e73;
+  --hairline: rgb(0 0 0 / 0.08);
+  --shadow-color: 0 0% 0%;
+  --danger: #d70015;
+
+  /* Glass material */
+  --glass-bg: rgb(251 251 253 / 0.72);
+  --glass-edge: rgb(255 255 255 / 0.6);
+
+  /* Brand (from the official logo): navy #142941, teal #069999 */
+  --brand-navy: #142941;
+  --brand-teal: #069999;
+  --teal-on-navy: #22b8b8;      /* text on navy bands: 6.0:1 (pure brand teal is only 4.2:1) */
+
+  /* Accent: brand teal. Pure #069999 is only 3.4:1 on --bg, so text/fills use a deeper teal. */
+  --accent: #007a7a;          /* text + icons, 5.0:1 on --bg */
+  --accent-fill: #007a7a;     /* button fill, 5.2:1 with white */
+  --on-accent: #ffffff;       /* text on the fill */
+  --accent-soft: rgb(6 153 153 / 0.12);
+  --accent-glow: rgb(6 153 153 / 0.45);
+
+  /* Easing tokens.
+     --ease-spring: a critically damped spring sampled into linear() (press/hover states).
+     --ease-out / --ease-in-out: strong custom curves for UI enter/exit and on-screen moves.
+     Gesture-driven motion uses Motion springs (lib/motion.ts). */
+  --ease-spring: linear(0, 0.054, 0.17, 0.305, 0.435, 0.552, 0.65, 0.731, 0.795, 0.845, 0.884, 0.913, 0.936, 0.953, 0.965, 0.975, 0.981, 0.986, 0.99, 0.993, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-press: 160ms;
+  --dur-hover: 250ms;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* True dark surfaces, not gray */
+    --bg: #000000;
+    --surface: #0d0d0f;
+    --surface-2: #161618;
+    --text: #f5f5f7;
+    --text-2: #a1a1a6;
+    --hairline: rgb(255 255 255 / 0.1);
+    --danger: #ff6961;
+    --glass-bg: rgb(22 22 24 / 0.68);
+    --glass-edge: rgb(255 255 255 / 0.12);
+
+    --brand-teal: #1ab3b3;      /* a touch brighter so the logo holds up on black */
+    --accent: #22b8b8;          /* 8.6:1 on black */
+    --accent-fill: #069999;     /* brand teal fill, black text 6.0:1 */
+    --on-accent: #000000;
+    --accent-soft: rgb(34 184 184 / 0.16);
+    --accent-glow: rgb(6 153 153 / 0.5);
   }
 }
 
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-hairline: var(--hairline);
+  --color-accent: var(--accent);
+  --color-accent-fill: var(--accent-fill);
+  --color-on-accent: var(--on-accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-teal: var(--brand-teal);
+  --color-teal-on-navy: var(--teal-on-navy);
+
+  --font-sans: -apple-system, system-ui, "SF Pro Display", "SF Pro Text", Inter, "Segoe UI", Roboto, sans-serif;
+
+  /* Tailwind transition-* defaults: strong ease-out, short */
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+
+  --radius-sm-card: 1.125rem; /* 18px */
+  --radius-card: 1.5rem;      /* 24px */
+  --radius-panel: 1.75rem;    /* 28px */
+
+}
+
+/* ==========================================================================
+   Type scale: size-specific tracking and leading (apple-design §15)
+   Large text gets negative tracking and tight leading. Body stays near 0.
+   ========================================================================== */
+
+@utility text-hero {
+  font-size: clamp(3rem, 1.6rem + 6vw, 6rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+/* Big numbers: hero weight, sized to fit three across */
+@utility text-stat {
+  font-size: clamp(3.5rem, 2.2rem + 3.6vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  white-space: nowrap;
+}
+@utility text-display {
+  font-size: clamp(2.5rem, 1.8rem + 3vw, 4rem);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+@utility text-headline {
+  font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+@utility text-title {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+@utility text-subhead {
+  font-size: clamp(1.1875rem, 1.05rem + 0.6vw, 1.5rem);
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+}
+@utility text-body {
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+@utility text-caption {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+}
+@utility text-eyebrow {
+  font-size: 0.9375rem;
+  line-height: 1.3;
+  letter-spacing: 0.005em;
+  font-weight: 600;
+}
+
+/* Section rhythm on the 8px grid: 80 / 120 / 160px */
+@utility section-y {
+  padding-block: 5rem;
+  @media (width >= 48rem) { padding-block: 7.5rem; }
+  @media (width >= 64rem) { padding-block: 10rem; }
+}
+
+@utility container-page {
+  width: 100%;
+  max-width: 75rem;
+  margin-inline: auto;
+  /* max() keeps content clear of the notch in landscape (viewport-fit=cover) */
+  padding-inline: max(1.25rem, env(safe-area-inset-left), env(safe-area-inset-right));
+  @media (width >= 48rem) { padding-inline: max(2rem, env(safe-area-inset-left), env(safe-area-inset-right)); }
+}
+
+/* ==========================================================================
+   Materials (apple-design §12)
+   ========================================================================== */
+
+@utility glass {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: inset 0 1px 0 var(--glass-edge);
+}
+/* Bigger surfaces read thicker: more blur, deeper shadow */
+@utility glass-thick {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  backdrop-filter: blur(32px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-edge),
+    0 24px 60px -20px hsl(var(--shadow-color) / 0.25);
+}
+
+/* Press: scales on pointer-DOWN (:active). Press-in 100ms, release 160ms (--dur-press),
+   both --ease-out. CSS transitions retarget from the current value, so they stay interruptible.
+   Cards also lift on hover, only for precise pointers (no sticky hover after a tap). */
+@utility pressable {
+  transition:
+    transform var(--dur-press) var(--ease-out),
+    background-color 200ms ease,
+    color 200ms ease,
+    filter 200ms ease;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  &:active { transform: scale(0.97); transition-duration: 100ms; }
+}
+
+@utility lift {
+  position: relative;
+  transition: transform var(--dur-hover) var(--ease-out);
+  touch-action: manipulation;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 20px 40px -16px hsl(var(--shadow-color) / 0.22);
+    opacity: 0;
+    transition: opacity var(--dur-hover) var(--ease-out);
+    pointer-events: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { transform: translateY(-4px); }
+    &:hover::after { opacity: 1; }
+  }
+  &:active { transform: scale(0.97); transition-duration: 100ms; }
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent; /* no gray flash on tap; every control has its own :active */
+  scroll-padding-top: 4rem;
+}
+
+/* Taps fire immediately (no double-tap-zoom wait) */
+a, button, [role="button"], summary, label { touch-action: manipulation; }
+/* Long-press must not select the label of a control */
+button, [role="button"], summary { user-select: none; -webkit-user-select: none; }
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 { text-wrap: balance; }
+p { text-wrap: pretty; }
+
+/* In the base layer so components (e.g. form inputs with their own ring) can override it */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+}
+
+::selection { background: var(--accent-soft); }
+
+/* FAQ accordion: height eases open where ::details-content is supported (Chromium);
+   other browsers open instantly, which is fine. Content fades so it never pops in hard. */
+details.faq {
+  interpolate-size: allow-keywords;
+}
+details.faq::details-content {
+  block-size: 0;
+  opacity: 0;
+  overflow-y: clip;
+  transition:
+    block-size 300ms var(--ease-out),
+    opacity 200ms var(--ease-out),
+    content-visibility 300ms allow-discrete;
+}
+details.faq[open]::details-content {
+  block-size: auto;
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Accessibility preferences (apple-design §14)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+  }
+  .pressable, .lift { transition: opacity 0.2s ease; }
+  details.faq::details-content { transition: opacity 200ms ease, content-visibility 200ms allow-discrete; }
+  .pressable:active, .lift:active, .lift:hover { transform: none; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .glass-thick {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --text-2: #3a3a3c;
+    --hairline: rgb(0 0 0 / 0.45);
+    --glass-bg: var(--surface);
+  }
+  .glass, .glass-thick {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border: 1px solid var(--hairline);
+  }
+}
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root {
+    --text-2: #d1d1d6;
+    --hairline: rgb(255 255 255 / 0.5);
+  }
 }
