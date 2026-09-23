@@ -30,15 +30,19 @@ export const viewport: Viewport = {
   viewportFit: "cover",
   // Android: the software keyboard resizes the layout, like iOS
   interactiveWidget: "resizes-content",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fbfbfd" },
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
-  ],
+  // Dark is the default theme (see components/layout/ThemeToggle.tsx), so the
+  // pre-hydration meta tag matches it; the toggle updates it once mounted.
+  themeColor: "#000000",
 };
+
+const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("theme")||"dark";document.documentElement.setAttribute("data-theme",t)}catch(e){}})()`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="flex min-h-dvh flex-col">
         <a
           href="#main"

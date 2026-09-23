@@ -7,6 +7,7 @@ import { nav } from "@/content/site";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "./Logo";
 import { MobileMenu } from "./MobileMenu";
+import { ThemeToggle } from "./ThemeToggle";
 import { cn } from "@/lib/cn";
 
 /**
@@ -65,6 +66,7 @@ export function Nav() {
             <span className="hidden sm:contents">
               <Button href={nav.cta.href}>{nav.cta.label}</Button>
             </span>
+            <ThemeToggle />
             <button
               ref={menuButtonRef}
               type="button"
