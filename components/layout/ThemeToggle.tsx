@@ -59,7 +59,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-      className={cn("pressable relative grid size-10 place-items-center overflow-hidden rounded-full")}
+      className={cn("pressable relative grid size-11 place-items-center overflow-hidden rounded-full")}
     >
       <AnimatePresence initial={false} mode="wait">
         <m.span

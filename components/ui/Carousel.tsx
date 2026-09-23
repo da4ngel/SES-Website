@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { animate, useMotionValue, useReducedMotion, type AnimationPlaybackControls } from "motion/react";
 import * as m from "motion/react-m";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { spring } from "@/lib/motion";
 import { HYSTERESIS, VelocityTracker, clamp, project, rubberband } from "@/lib/gesture";
 import { cn } from "@/lib/cn";
@@ -34,6 +34,9 @@ export function Carousel({ label, slides, autoplay = 7000, className }: Props) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [userTookOver, setUserTookOver] = useState(false);
+  // Explicit, discoverable pause — distinct from the implicit hover/focus pause below
+  // (WCAG 2.2.2 requires a visible mechanism, not just "stops if you happen to hover it").
+  const [manuallyPaused, setManuallyPaused] = useState(false);
   const reduced = useReducedMotion();
   const anim = useRef<AnimationPlaybackControls | null>(null);
   const widthRef = useRef(0);
@@ -83,12 +86,13 @@ export function Carousel({ label, slides, autoplay = 7000, className }: Props) {
     return () => ro.disconnect();
   }, [x]);
 
-  // Gentle auto-rotation. Pauses on hover/focus, stops for good once the user interacts.
+  // Gentle auto-rotation. Pauses on hover/focus, stops for good once the user interacts
+  // (drag, arrow, dot) or presses the explicit pause button below.
   useEffect(() => {
-    if (!autoplay || reduced || paused || userTookOver || count < 2) return;
+    if (!autoplay || reduced || paused || userTookOver || manuallyPaused || count < 2) return;
     const id = window.setInterval(() => goTo((indexRef.current + 1) % count), autoplay);
     return () => window.clearInterval(id);
-  }, [autoplay, reduced, paused, userTookOver, count, goTo]);
+  }, [autoplay, reduced, paused, userTookOver, manuallyPaused, count, goTo]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0) return;
@@ -221,12 +225,12 @@ export function Carousel({ label, slides, autoplay = 7000, className }: Props) {
           }}
           disabled={index === 0}
           aria-label="Previous testimonial"
-          className="pressable grid size-10 place-items-center rounded-full bg-surface-2 text-text ring-1 ring-inset ring-hairline disabled:opacity-40"
+          className="pressable grid size-11 place-items-center rounded-full bg-surface-2 text-text ring-1 ring-inset ring-hairline disabled:opacity-40"
         >
           <ChevronLeft className="size-5" strokeWidth={1.5} aria-hidden="true" />
         </button>
 
-        <div className="flex gap-2">
+        <div className="flex gap-1">
           {slides.map((_, i) => (
             <button
               key={i}
@@ -237,7 +241,7 @@ export function Carousel({ label, slides, autoplay = 7000, className }: Props) {
               }}
               aria-label={`Show testimonial ${i + 1}`}
               aria-current={i === index}
-              className="grid size-6 place-items-center"
+              className="grid min-h-11 min-w-11 place-items-center"
             >
               <span
                 className={cn(
@@ -249,6 +253,21 @@ export function Carousel({ label, slides, autoplay = 7000, className }: Props) {
           ))}
         </div>
 
+        {!!autoplay && !reduced && count >= 2 && (
+          <button
+            type="button"
+            onClick={() => setManuallyPaused((p) => !p)}
+            aria-label={manuallyPaused ? "Resume automatic slides" : "Pause automatic slides"}
+            className="pressable grid size-11 place-items-center rounded-full bg-surface-2 text-text ring-1 ring-inset ring-hairline"
+          >
+            {manuallyPaused ? (
+              <Play className="size-4" strokeWidth={1.5} aria-hidden="true" />
+            ) : (
+              <Pause className="size-4" strokeWidth={1.5} aria-hidden="true" />
+            )}
+          </button>
+        )}
+
         <button
           type="button"
           onClick={() => {
@@ -257,7 +276,7 @@ export function Carousel({ label, slides, autoplay = 7000, className }: Props) {
           }}
           disabled={index === count - 1}
           aria-label="Next testimonial"
-          className="pressable grid size-10 place-items-center rounded-full bg-surface-2 text-text ring-1 ring-inset ring-hairline disabled:opacity-40"
+          className="pressable grid size-11 place-items-center rounded-full bg-surface-2 text-text ring-1 ring-inset ring-hairline disabled:opacity-40"
         >
           <ChevronRight className="size-5" strokeWidth={1.5} aria-hidden="true" />
         </button>

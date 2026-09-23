@@ -34,6 +34,10 @@
   --on-accent: #ffffff;       /* text on the fill */
   --accent-soft: rgb(6 153 153 / 0.12);
   --accent-glow: rgb(6 153 153 / 0.45);
+  /* Text-on-accent-soft (small pill/badge labels): --accent's 5.0:1 is measured
+     against solid --bg, but composited over --accent-soft it's a marginal ~4.5:1.
+     This deeper teal clears ~6.4:1 against that same tint. */
+  --accent-soft-text: #006060;
 
   /* Easing tokens.
      --ease-spring: a critically damped spring sampled into linear() (press/hover states).
@@ -66,6 +70,8 @@
   --on-accent: #000000;
   --accent-soft: rgb(34 184 184 / 0.16);
   --accent-glow: rgb(6 153 153 / 0.5);
+  /* --accent itself is already ~5.7:1 against the dark-mode accent-soft tint. */
+  --accent-soft-text: var(--accent);
 }
 
 @theme inline {
@@ -79,6 +85,7 @@
   --color-accent-fill: var(--accent-fill);
   --color-on-accent: var(--on-accent);
   --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-text: var(--accent-soft-text);
   --color-danger: var(--danger);
   --color-brand-navy: var(--brand-navy);
   --color-brand-teal: var(--brand-teal);

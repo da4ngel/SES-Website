@@ -27,7 +27,7 @@ export const ease = {
 };
 
 /** Stagger between siblings in a group entrance (decorative, capped) */
-export const STAGGER = 0.05;
+const STAGGER = 0.05;
 export const staggerDelay = (i: number) => Math.min(i, 6) * STAGGER;
 
 /** Scroll reveal: short fade + small rise, once (see components/ui/Reveal.tsx) */

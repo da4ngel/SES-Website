@@ -28,7 +28,7 @@ export type SolutionSection =
   | { kind: "beforeAfter"; headline: string; pairs: { before: string; after: string }[] }
   | { kind: "groups"; headline: string; groups: { title: string; points: string[] }[] };
 
-export type Solution = {
+type Solution = {
   slug: string;
   icon: IconName;
   /** 3–5 words */

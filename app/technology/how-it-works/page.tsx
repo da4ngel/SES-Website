@@ -2,6 +2,7 @@ import { seo } from "@/content/seo";
 import { howItWorksIntro, howItWorksPage, steps, whatWeInstall } from "@/content/howItWorks";
 import { howItWorksBenefits, managedServicesFaq } from "@/content/technology";
 import { pageMetadata } from "@/lib/metadata";
+import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { cn } from "@/lib/cn";
 import { PageHero } from "@/components/ui/PageHero";
 import { Section } from "@/components/ui/Section";
@@ -19,6 +20,17 @@ export const metadata = pageMetadata({ ...seo.howItWorks, path: "/technology/how
 export default function HowItWorksPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd([
+              { name: "Technology", path: "/technology/" },
+              { name: "How it works", path: "/technology/how-it-works/" },
+            ]),
+          ),
+        }}
+      />
       <PageHero eyebrow={howItWorksPage.eyebrow} title={howItWorksPage.headline} subhead={howItWorksPage.subhead}>
         <Button href="/contact/#book" size="lg">
           Book a call

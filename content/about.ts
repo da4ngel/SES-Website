@@ -5,11 +5,6 @@ export const about = {
   eyebrow: "About SES",
   headline: "Smart control since 2012.",
   subhead: "We help businesses with many sites spend less on energy and worry less about HVAC.",
-  facts: [
-    { value: "2012", label: "DLC in the field since" },
-    { value: "1,100+", label: "Locations served" },
-    { value: "5", label: "Industries" },
-  ],
   story: {
     headline: "Built for businesses with many roofs.",
     paragraphs: [

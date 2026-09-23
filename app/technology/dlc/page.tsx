@@ -1,6 +1,7 @@
 import { seo } from "@/content/seo";
 import { dlcFeatures, technologyFaq } from "@/content/technology";
 import { pageMetadata } from "@/lib/metadata";
+import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { PageHero } from "@/components/ui/PageHero";
 import { Section } from "@/components/ui/Section";
 import { Card } from "@/components/ui/Card";
@@ -16,6 +17,17 @@ export default function DlcPage() {
   const d = dlcFeatures;
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd([
+              { name: "Technology", path: "/technology/" },
+              { name: "DLC features", path: "/technology/dlc/" },
+            ]),
+          ),
+        }}
+      />
       <PageHero eyebrow={d.eyebrow} title={d.headline} subhead={d.subhead} />
 
       <Section tone="alt" aria-label="What the DLC does" className="pt-16! md:pt-20!">

@@ -74,7 +74,7 @@ export function Nav() {
               aria-controls="mobile-menu"
               aria-label={open ? "Close menu" : "Open menu"}
               onClick={() => setOpen((o) => !o)}
-              className="pressable -mr-2 grid size-10 place-items-center rounded-full lg:hidden"
+              className="pressable -mr-2 grid size-11 place-items-center rounded-full lg:hidden"
             >
               <MenuGlyph open={open} />
             </button>

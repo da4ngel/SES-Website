@@ -63,4 +63,28 @@ export const seo = {
     title: "Privacy",
     description: "How Save Energy Systems handles information you share on this website.",
   },
+  faq: {
+    title: "FAQ",
+    description: "Answers about the Demand Limiting Controller, the platform and SES managed services.",
+  },
+  terms: {
+    title: "Terms of Service",
+    description: "The terms that apply to using the Save Energy Systems website.",
+  },
+  cookies: {
+    title: "Cookie Policy",
+    description: "What this website stores in your browser, and why.",
+  },
+  accessibility: {
+    title: "Accessibility",
+    description: "Our accessibility conformance target and how to reach us about issues.",
+  },
+  savingsCalculator: {
+    title: "Savings calculator",
+    description: "Estimate what your sites could save on HVAC energy with SES.",
+  },
+  htmlSitemap: {
+    title: "Sitemap",
+    description: "Every page on this site.",
+  },
 } as const;

@@ -10,6 +10,7 @@ import type { FieldDef, FormSchema } from "@/content/forms";
 import { formErrors } from "@/content/forms";
 import { ease, spring } from "@/lib/motion";
 import { cn } from "@/lib/cn";
+import { trackEvent } from "@/lib/analytics";
 import { Button } from "@/components/ui/Button";
 
 type Values = Record<string, string | boolean>;
@@ -30,13 +31,28 @@ function validateField(f: FieldDef, v: string | boolean): string | undefined {
 // Optional prefill from the URL, e.g. /contact/?interest=pilot selects "Pilot Program".
 const noopSubscribe = () => () => {};
 
+const HONEYPOT_FIELD = "website";
+
 /**
- * TODO: backend. Replace with the real submission (form service, CRM or API).
- * `schema.id` tells the backend which form this is (contact / pilot / ses-pro).
+ * ============================================================================
+ * TODO(backend): this is a stub. No submission currently reaches anywhere.
+ * Wire this to a real form service, CRM or API before launch. `formId` tells
+ * the backend which form this is (contact / pilot / ses-pro). Example:
+ *
+ *   const res = await fetch(process.env.NEXT_PUBLIC_FORM_ENDPOINT!, {
+ *     method: "POST",
+ *     headers: { "Content-Type": "application/json" },
+ *     body: JSON.stringify({ formId, ...values }),
+ *   });
+ *   if (!res.ok) throw new Error(`Form submission failed: ${res.status}`);
+ * ============================================================================
  */
 async function submitLead(formId: string, values: Values): Promise<void> {
   void formId;
   void values;
+  if (process.env.NODE_ENV !== "production") {
+    console.warn("[Form] submitLead is a stub — no backend is configured. See the TODO(backend) comment above submitLead().");
+  }
   await new Promise((r) => setTimeout(r, 600));
 }
 
@@ -59,6 +75,8 @@ export function Form({ schema }: { schema: FormSchema }) {
   const [values, setValues] = useState<Values>(() => initialValues(schema.fields));
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  // Spam trap: real visitors never see or fill this field. A filled value means a bot.
+  const [honeypot, setHoneypot] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const successRef = useRef<HTMLHeadingElement>(null);
 
@@ -72,6 +90,11 @@ export function Form({ schema }: { schema: FormSchema }) {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (honeypot) {
+      // Silently drop bot submissions: show the same success state, send nothing.
+      setStatus("sent");
+      return;
+    }
     setTouched(Object.fromEntries(schema.fields.map((f) => [f.name, true])));
     const firstBad = schema.fields.find((f) => errors[f.name]);
     if (firstBad) {
@@ -82,6 +105,7 @@ export function Form({ schema }: { schema: FormSchema }) {
     try {
       await submitLead(schema.id, current);
       setStatus("sent");
+      trackEvent("generate_lead", { form_id: schema.id });
     } catch {
       setStatus("idle");
       // Network failure: the form keeps its values; a toast explains what to do.
@@ -132,6 +156,11 @@ export function Form({ schema }: { schema: FormSchema }) {
           <m.form
             key="form"
             ref={formRef}
+            method="post"
+            // noValidate suppresses the browser's own error bubbles in favor of the inline
+            // errors below; `required`/`aria-required` on each field still matter for
+            // accessibility (and as an honest signal to autofill/AT), even though real
+            // empty-submission protection has to happen server-side regardless.
             noValidate
             onSubmit={onSubmit}
             initial={{ opacity: 0 }}
@@ -139,6 +168,20 @@ export function Form({ schema }: { schema: FormSchema }) {
             exit={{ opacity: 0, transition: { duration: 0.15, ease: ease.out } }}
             className="grid gap-5 sm:grid-cols-2"
           >
+            {/* Spam trap: hidden from sighted/AT users via off-screen positioning (not
+                display:none), which basic bots still fill in because they parse the DOM. */}
+            <div aria-hidden="true" className="absolute -left-[9999px] top-auto size-px overflow-hidden">
+              <label htmlFor={`${schema.id}-website`}>Leave this field empty</label>
+              <input
+                id={`${schema.id}-website`}
+                type="text"
+                name={HONEYPOT_FIELD}
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
             {schema.fields.map((f) => (
               <Field
                 key={f.name}
@@ -187,17 +230,19 @@ function Field({
 }) {
   const id = useId();
   const errId = `${id}-error`;
-  const aria = { "aria-invalid": !!error, "aria-describedby": error ? errId : undefined };
+  const aria = { "aria-invalid": !!error, "aria-describedby": error ? errId : undefined, "aria-required": !!f.required };
   const span = f.half ? "" : "sm:col-span-2";
 
   if (f.type === "checkbox") {
     return (
       <div className="sm:col-span-2">
-        <label className="flex cursor-pointer items-start gap-3">
+        <label htmlFor={id} className="flex cursor-pointer items-start gap-3">
           <input
+            id={id}
             type="checkbox"
             name={f.name}
             checked={!!value}
+            required={f.required}
             onChange={(e) => {
               onChange(e.target.checked);
               onBlur();
@@ -231,6 +276,7 @@ function Field({
                 name={f.name}
                 value={o}
                 checked={value === o}
+                required={f.required}
                 onChange={() => onChange(o)}
                 onBlur={onBlur}
                 className="peer sr-only"
@@ -257,6 +303,7 @@ function Field({
           id={id}
           name={f.name}
           value={String(value)}
+          required={f.required}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
           {...aria}
@@ -279,6 +326,7 @@ function Field({
           rows={4}
           value={String(value)}
           placeholder={f.placeholder}
+          required={f.required}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
           {...aria}
@@ -294,6 +342,7 @@ function Field({
           enterKeyHint="next"
           value={String(value)}
           placeholder={f.placeholder}
+          required={f.required}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
           {...aria}

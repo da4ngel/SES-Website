@@ -4,6 +4,7 @@ import { clients, proofLine, testimonials } from "@/content/results";
 import { scale } from "@/content/company";
 import { socialProof } from "@/content/home";
 import { pageMetadata } from "@/lib/metadata";
+import { reviewJsonLd } from "@/lib/jsonld";
 import { PageHero } from "@/components/ui/PageHero";
 import { Section } from "@/components/ui/Section";
 import { Heading } from "@/components/ui/Heading";
@@ -19,6 +20,9 @@ export const metadata = pageMetadata({ ...seo.results, path: "/results/" });
 export default function ResultsPage() {
   return (
     <>
+      {reviewJsonLd(testimonials).map((review, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(review) }} />
+      ))}
       <PageHero eyebrow="Results" title="Real sites. Real savings." subhead="Case studies from gyms, dealerships, hotels, factories and churches." />
 
       <Section tone="alt" aria-label="SES at a glance" className="pt-16! md:pt-20!">

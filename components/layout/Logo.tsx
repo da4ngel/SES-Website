@@ -27,7 +27,10 @@ export function Logo({ variant = "full", className, title }: Props) {
     );
   }
   return (
-    <svg viewBox={LOGO_VIEWBOX} className={cn("h-9 w-auto", className)} {...a11y}>
+    // No default height here — every caller passes one, and cn() doesn't dedupe
+    // conflicting Tailwind classes (it's a plain join, not tailwind-merge), so a
+    // baked-in default plus a caller override would both land in the class list.
+    <svg viewBox={LOGO_VIEWBOX} className={cn("w-auto", className)} {...a11y}>
       {arc.map((d, i) => (
         <path key={`a${i}`} d={d} fill="var(--brand-teal)" />
       ))}

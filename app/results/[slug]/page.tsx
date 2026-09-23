@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { caseStudies, getCaseStudy } from "@/content/caseStudies";
 import { pageMetadata } from "@/lib/metadata";
+import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { Section } from "@/components/ui/Section";
 import { Heading } from "@/components/ui/Heading";
 import { Card } from "@/components/ui/Card";
@@ -31,6 +32,17 @@ export default async function CaseStudyPage({ params }: PageProps<"/results/[slu
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd([
+              { name: "Results", path: "/results/" },
+              { name: c.client, path: `/results/${c.slug}/` },
+            ]),
+          ),
+        }}
+      />
       <section className="pb-14 pt-20 text-center md:pb-20 md:pt-28">
         <div className="container-page">
           <p className="text-eyebrow text-accent">

@@ -7,7 +7,7 @@ import { Section } from "@/components/ui/Section";
 import { Heading } from "@/components/ui/Heading";
 import { Card } from "@/components/ui/Card";
 import { Reveal } from "@/components/ui/Reveal";
-import { buttonClasses } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { StatTiles } from "@/components/ui/StatTiles";
 import { Form } from "@/components/forms/Form";
 
@@ -24,9 +24,9 @@ export default function PilotPage() {
           <p className="text-eyebrow text-teal-on-navy">{p.eyebrow}</p>
           <h1 className="text-display mx-auto mt-3 max-w-[16ch]">{p.headline}</h1>
           <p className="text-subhead mx-auto mt-5 max-w-[34rem] text-white/75">{p.subhead}</p>
-          <a href="#apply" className={buttonClasses({ size: "lg", variant: "onNavy" }) + " mt-10"}>
+          <Button href="#apply" size="lg" variant="onNavy" className="mt-10">
             Apply now
-          </a>
+          </Button>
           <dl className="mx-auto mt-16 grid max-w-[52rem] gap-8 sm:grid-cols-3">
             {p.promises.map((x) => (
               <div key={x.label} className="flex flex-col-reverse">

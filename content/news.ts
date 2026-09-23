@@ -4,7 +4,7 @@
  * `source` links the original post.
  */
 
-export type NewsPost = {
+type NewsPost = {
   slug: string;
   date: string; // ISO
   tag: "Event" | "Award" | "Report" | "Insight";
@@ -17,7 +17,9 @@ export type NewsPost = {
 export const news: NewsPost[] = [
   {
     slug: "pfifc-frisco-2026",
-    date: "2026-04-29",
+    // Published after the May 5–8 event (matches the past-tense copy below —
+    // source article's own URL is dated 2026-04, but the event itself is May 5–8).
+    date: "2026-05-09",
     tag: "Event",
     title: "AI-driven energy optimization at PFIFC Frisco 2026",
     summary: "SES joined Planet Fitness franchisees in Frisco, May 5–8, to talk AI energy optimization and SmartPM.",

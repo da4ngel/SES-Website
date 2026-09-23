@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getSolution, solutions } from "@/content/solutions";
 import { pageMetadata } from "@/lib/metadata";
+import { breadcrumbJsonLd, serviceJsonLd } from "@/lib/jsonld";
 import { Section } from "@/components/ui/Section";
 import { Heading } from "@/components/ui/Heading";
 import { Card } from "@/components/ui/Card";
@@ -37,6 +38,23 @@ export default async function SolutionPage({ params }: PageProps<"/solutions/[sl
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd([
+              { name: "Solutions", path: "/solutions/" },
+              { name: s.title, path: `/solutions/${s.slug}/` },
+            ]),
+          ),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(serviceJsonLd({ name: s.title, description: `${s.headline} ${s.subhead}`, path: `/solutions/${s.slug}/` })),
+        }}
+      />
       <section className="pb-16 pt-20 text-center md:pb-24 md:pt-28">
         <div className="container-page">
           <span className="mx-auto grid size-14 place-items-center rounded-full bg-accent-soft text-accent">

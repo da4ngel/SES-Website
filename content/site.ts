@@ -26,9 +26,9 @@ export const site = {
     country: "US",
   },
   social: [
-    { label: "LinkedIn", href: "https://www.linkedin.com/company/save-energy-systems-inc-" },
-    { label: "YouTube", href: "https://www.youtube.com/@SaveEnergySystems" },
-    { label: "Facebook", href: "https://www.facebook.com/ses01581" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/company/save-energy-systems-inc-", icon: "linkedin" },
+    { label: "YouTube", href: "https://www.youtube.com/@SaveEnergySystems", icon: "youtube" },
+    { label: "Facebook", href: "https://www.facebook.com/ses01581", icon: "facebook" },
   ],
 } as const;
 
@@ -53,14 +53,22 @@ export const footer = {
       { label: "Results", href: "/results/" },
       { label: "News", href: "/news/" },
       { label: "About", href: "/about/" },
+      { label: "FAQ", href: "/faq/" },
       { label: "Contact", href: "/contact/" },
     ],
     programs: [
       { label: "Pilot Program", href: "/pilot/" },
       { label: "SES Pro for contractors", href: "/ses-pro/" },
+      { label: "Savings calculator", href: "/savings-calculator/" },
       { label: "ESG impact", href: "/news/hvac-esg-impact-report-2025/" },
     ],
   },
-  legal: [{ label: "Privacy", href: "/privacy/" }],
+  legal: [
+    { label: "Privacy", href: "/privacy/" },
+    { label: "Terms", href: "/terms/" },
+    { label: "Cookies", href: "/cookies/" },
+    { label: "Accessibility", href: "/accessibility/" },
+    { label: "Sitemap", href: "/html-sitemap/" },
+  ],
   copyright: `© ${new Date().getFullYear()} Save Energy Systems, Inc.`,
 } as const;

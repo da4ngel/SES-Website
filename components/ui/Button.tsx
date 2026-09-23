@@ -11,7 +11,9 @@ const base =
 const variants: Record<Variant, string> = {
   primary: "bg-accent-fill text-on-accent hover:brightness-110",
   secondary: "bg-surface-2 text-text ring-1 ring-inset ring-hairline hover:bg-surface",
-  ghost: "text-accent hover:underline underline-offset-4",
+  // py-2.5 -my-2.5: expands the tap target to ~44px tall (WCAG/Apple/Google guidance)
+  // without pushing surrounding layout — the extra padding is cancelled by the negative margin.
+  ghost: "text-accent hover:underline underline-offset-4 py-2.5 -my-2.5",
   /** Bright teal pill for navy brand bands (navy text on teal: 6.0:1) */
   onNavy: "bg-teal-on-navy text-brand-navy hover:brightness-110",
 };
@@ -20,11 +22,6 @@ const sizes: Record<Size, string> = {
   md: "h-10 px-5 text-[0.9375rem]",
   lg: "h-12 px-7 text-[1.0625rem]",
 };
-
-/** Same look for elements that can't be a Button (e.g. a plain <a> that must fully reload). */
-export function buttonClasses({ variant = "primary", size = "md" }: { variant?: Variant; size?: Size } = {}) {
-  return cn(base, variants[variant], variant !== "ghost" && sizes[size]);
-}
 
 type Common ={ variant?: Variant; size?: Size; className?: string; children: React.ReactNode };
 

@@ -1,6 +1,7 @@
 import { seo } from "@/content/seo";
 import { architecture, technologyFaq } from "@/content/technology";
 import { pageMetadata } from "@/lib/metadata";
+import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { PageHero } from "@/components/ui/PageHero";
 import { Section } from "@/components/ui/Section";
 import { Heading } from "@/components/ui/Heading";
@@ -16,6 +17,17 @@ export default function ArchitecturePage() {
   const a = architecture;
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd([
+              { name: "Technology", path: "/technology/" },
+              { name: "Architecture", path: "/technology/architecture/" },
+            ]),
+          ),
+        }}
+      />
       <PageHero eyebrow={a.eyebrow} title={a.headline} subhead={a.subhead} />
 
       {/* The six layers build up as you scroll (stacked cards on mobile) */}

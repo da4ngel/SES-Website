@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
 import { spring } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 import { Reveal } from "./Reveal";
 
-export type StoryItem = {
+type StoryItem = {
   key: string;
   eyebrow: React.ReactNode;
   title: string;
@@ -26,6 +27,29 @@ type Props = {
 };
 
 /**
+ * The eyebrow/title/line text, defined once so the desktop and mobile layouts below
+ * (which render genuinely different DOM shapes — sticky two-column vs. stacked cards,
+ * so they can't share one tree) can't drift out of sync with each other. Both copies
+ * still exist in the DOM (one per breakpoint's own layout), but only one is ever in the
+ * accessibility tree at a time — Tailwind's `hidden`/`lg:hidden` compiles to `display:
+ * none`, which screen readers skip, so this is a source-of-truth fix (for crawlers /
+ * future edits), not an aria-hidden fix — that part was already correct.
+ */
+function StoryText({ item, size }: { item: StoryItem; size: "desktop" | "mobile" }) {
+  return (
+    <>
+      <span className={cn("text-eyebrow text-accent", size === "mobile" && "inline-flex items-center gap-2")}>
+        {item.eyebrow}
+      </span>
+      <h3 className={cn("mt-2 text-text", size === "desktop" ? "text-headline" : "text-title")}>{item.title}</h3>
+      <p className={cn("text-text-2", size === "desktop" ? "text-subhead mt-3 max-w-[26rem]" : "text-body mt-2")}>
+        {item.line}
+      </p>
+    </>
+  );
+}
+
+/**
  * Desktop (lg+): sticky scroll story. The visual is pinned on the left; items on the right
  * advance as each crosses the middle of the screen. Mobile: stacked cards.
  * Swaps are masked with a 2px blur so the cross-fade reads as one change, not two overlapping states.
@@ -38,6 +62,7 @@ export function ScrollStory({
 }: Props) {
   const [active, setActive] = useState(0);
   const refs = useRef<(HTMLLIElement | null)[]>([]);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -89,10 +114,8 @@ export function ScrollStory({
               data-index={i}
               className="flex min-h-[70vh] flex-col justify-center first:min-h-[50vh] last:min-h-[50vh]"
             >
-              <div className={cn("transition-opacity duration-300", i === active ? "opacity-100" : "opacity-30")}>
-                <span className="text-eyebrow text-accent">{it.eyebrow}</span>
-                <h3 className="text-headline mt-2 text-text">{it.title}</h3>
-                <p className="text-subhead mt-3 max-w-[26rem] text-text-2">{it.line}</p>
+              <div className={cn(!reduced && "transition-opacity duration-300", i === active ? "opacity-100" : "opacity-30")}>
+                <StoryText item={it} size="desktop" />
               </div>
             </li>
           ))}
@@ -104,9 +127,7 @@ export function ScrollStory({
           <Reveal as="li" key={it.key} className="overflow-hidden rounded-panel bg-surface-2 ring-1 ring-inset ring-hairline">
             <div className={cn("px-6 pt-6", mobileVisualClassName)}>{it.visual}</div>
             <div className="p-6 pt-2">
-              <span className="text-eyebrow inline-flex items-center gap-2 text-accent">{it.eyebrow}</span>
-              <h3 className="text-title mt-2 text-text">{it.title}</h3>
-              <p className="text-body mt-2 text-text-2">{it.line}</p>
+              <StoryText item={it} size="mobile" />
             </div>
           </Reveal>
         ))}

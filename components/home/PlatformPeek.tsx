@@ -70,7 +70,7 @@ export function PlatformPeek() {
                       <p className="text-body font-medium text-text">{a.issue}</p>
                       <p className="text-caption text-text-2">{a.unit}</p>
                     </div>
-                    <span className="text-caption rounded-full bg-accent-soft px-3 py-1 font-medium text-accent">
+                    <span className="text-caption rounded-full bg-accent-soft px-3 py-1 font-medium text-accent-soft-text">
                       {a.tag}
                     </span>
                   </li>

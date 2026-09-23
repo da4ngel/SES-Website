@@ -7,7 +7,7 @@ import { Heading } from "@/components/ui/Heading";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
-import { buttonClasses } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { StatTiles } from "@/components/ui/StatTiles";
 import { LogoWall } from "@/components/ui/LogoWall";
 import { Form } from "@/components/forms/Form";
@@ -23,9 +23,9 @@ export default function SesProPage() {
           <p className="text-eyebrow text-teal-on-navy">{p.eyebrow}</p>
           <h1 className="text-display mx-auto mt-3 max-w-[16ch]">{p.headline}</h1>
           <p className="text-subhead mx-auto mt-5 max-w-[34rem] text-white/75">{p.subhead}</p>
-          <a href="#apply" className={buttonClasses({ size: "lg", variant: "onNavy" }) + " mt-10"}>
+          <Button href="#apply" size="lg" variant="onNavy" className="mt-10">
             Get your free kit
-          </a>
+          </Button>
           <p className="text-caption mt-6 text-white/65">{p.trust}</p>
         </div>
       </section>

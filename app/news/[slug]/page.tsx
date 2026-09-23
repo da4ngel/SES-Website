@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { formatDate, getPost, news } from "@/content/news";
 import { site } from "@/content/site";
 import { pageMetadata } from "@/lib/metadata";
+import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 
@@ -35,6 +36,10 @@ export default async function NewsPostPage({ params }: PageProps<"/news/[slug]">
     publisher: { "@type": "Organization", name: site.name, logo: { "@type": "ImageObject", url: `${site.url}/images/ses-logo-original.svg` } },
     mainEntityOfPage: `${site.url}/news/${p.slug}/`,
   };
+  const breadcrumb = breadcrumbJsonLd([
+    { name: "News", path: "/news/" },
+    { name: p.title, path: `/news/${p.slug}/` },
+  ]);
 
   return (
     <article className="pb-24 pt-20 md:pb-32 md:pt-28">
@@ -75,6 +80,7 @@ export default async function NewsPostPage({ params }: PageProps<"/news/[slug]">
         </div>
       </div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
     </article>
   );
 }

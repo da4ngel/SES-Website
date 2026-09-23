@@ -1,6 +1,7 @@
 import { seo } from "@/content/seo";
 import { assetManagement } from "@/content/technology";
 import { pageMetadata } from "@/lib/metadata";
+import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { PageHero } from "@/components/ui/PageHero";
 import { Section } from "@/components/ui/Section";
 import { Heading } from "@/components/ui/Heading";
@@ -15,6 +16,17 @@ export default function AssetManagementPage() {
   const a = assetManagement;
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd([
+              { name: "Technology", path: "/technology/" },
+              { name: "Asset management", path: "/technology/asset-management/" },
+            ]),
+          ),
+        }}
+      />
       <PageHero eyebrow={a.eyebrow} title={a.headline} subhead={a.subhead}>
         <Button href="/solutions/smartpm/" size="lg" variant="secondary">
           See SmartPM

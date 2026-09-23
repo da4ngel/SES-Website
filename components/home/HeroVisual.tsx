@@ -1,6 +1,7 @@
 "use client";
 
 import * as m from "motion/react-m";
+import { useReducedMotion } from "motion/react";
 import { spring } from "@/lib/motion";
 
 const units = [170, 320, 470]; // x-centers of the three rooftop units
@@ -9,9 +10,12 @@ const units = [170, 320, 470]; // x-centers of the three rooftop units
  * Building + rooftop units (RTUs), each with an SES controller linked to the cloud.
  * On load, energy "powers up" once: glow blooms, controller LEDs light in sequence,
  * links to the cloud appear. Plays once, no loop (apple-design §14: avoid slow oscillation).
- * Opacity + transform only.
+ * Opacity + transform only. Timeline is kept short (~1s total) so the teal/accent
+ * highlighting reads quickly rather than leaving the illustration looking empty.
+ * Under reduced motion, every element jumps straight to its resting state.
  */
 export function HeroVisual({ alt }: { alt: string }) {
+  const reduced = useReducedMotion();
   return (
     <div className="relative mx-auto w-full max-w-[48rem]">
       {/* Soft energy glow behind the roof */}
@@ -22,9 +26,9 @@ export function HeroVisual({ alt }: { alt: string }) {
           background: "radial-gradient(closest-side, var(--accent-glow), transparent)",
           filter: "blur(8px)",
         }}
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={reduced ? { opacity: 0.55, scale: 1 } : { opacity: 0, scale: 0.8 }}
         animate={{ opacity: 0.55, scale: 1 }}
-        transition={{ ...spring.calm, delay: 0.2 }}
+        transition={reduced ? { duration: 0 } : { ...spring.calm, delay: 0.2 }}
       />
 
       <svg viewBox="0 0 640 400" role="img" aria-label={alt} className="relative w-full">
@@ -42,9 +46,9 @@ export function HeroVisual({ alt }: { alt: string }) {
             className="stroke-accent"
             strokeWidth="1.5"
             transform="translate(0 -4)"
-            initial={{ opacity: 0 }}
+            initial={reduced ? { opacity: 1 } : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1.5 }}
+            transition={reduced ? { duration: 0 } : { duration: 0.4, delay: 0.7 }}
           />
         </g>
 
@@ -60,9 +64,9 @@ export function HeroVisual({ alt }: { alt: string }) {
                 className="stroke-accent"
                 strokeWidth="1.5"
                 strokeDasharray="3 5"
-                initial={{ opacity: 0 }}
+                initial={reduced ? { opacity: 0.9 } : { opacity: 0 }}
                 animate={{ opacity: 0.9 }}
-                transition={{ duration: 0.5, delay: 1.0 + i * 0.15 }}
+                transition={reduced ? { duration: 0 } : { duration: 0.4, delay: 0.4 + i * 0.12 }}
               />
             </g>
           );
@@ -114,9 +118,9 @@ export function HeroVisual({ alt }: { alt: string }) {
               cy="158"
               r="2.5"
               className="fill-accent"
-              initial={{ opacity: 0 }}
+              initial={reduced ? { opacity: 1 } : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.6 + i * 0.18 }}
+              transition={reduced ? { duration: 0 } : { duration: 0.25, delay: 0.3 + i * 0.12 }}
             />
             {/* LED halo: blooms once, then settles */}
             <m.circle
@@ -124,9 +128,9 @@ export function HeroVisual({ alt }: { alt: string }) {
               cy="158"
               r="9"
               className="fill-accent"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.35, 0.12] }}
-              transition={{ duration: 1.2, delay: 0.6 + i * 0.18, times: [0, 0.3, 1] }}
+              initial={reduced ? { opacity: 0.12 } : { opacity: 0 }}
+              animate={reduced ? { opacity: 0.12 } : { opacity: [0, 0.35, 0.12] }}
+              transition={reduced ? { duration: 0 } : { duration: 0.8, delay: 0.3 + i * 0.12, times: [0, 0.3, 1] }}
             />
           </g>
         ))}

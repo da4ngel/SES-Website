@@ -13,4 +13,3 @@ The site currently uses text placeholders and illustrations. When the real asset
 
 Already here:
 - `ses-logo-original.svg`: the official vector logo (source for `scripts/build-logo.mjs`).
-- `SES-logo.png`: the small PNG you supplied (reference only; not used on the site).
