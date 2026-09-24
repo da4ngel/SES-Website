@@ -9,7 +9,9 @@ export function organizationJsonLd() {
     name: site.name,
     alternateName: site.shortName,
     url: site.url,
-    logo: `${site.url}/images/ses-logo-original.svg`,
+    // Google's structured-data guidelines require a raster format here, not SVG
+    // (see app/logo.png/route.tsx).
+    logo: `${site.url}/logo.png`,
     slogan: site.tagline,
     description: site.description,
     email: site.email.sales,

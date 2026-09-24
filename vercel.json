@@ -1,0 +1,6 @@
+{
+  "redirects": [
+    { "source": "/how-it-works", "destination": "/technology/how-it-works/", "permanent": true },
+    { "source": "/how-it-works/", "destination": "/technology/how-it-works/", "permanent": true }
+  ]
+}

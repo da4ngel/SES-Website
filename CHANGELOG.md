@@ -40,8 +40,30 @@ Run locally: `npm run dev` → http://localhost:3000 · Static build: `npm run b
 | Spring feel (JS), stagger | `lib/motion.ts` → `spring`, `ease`, `STAGGER` | |
 | Carousel physics | `lib/gesture.ts` + `components/ui/Carousel.tsx` (`FLICK_VELOCITY`) | |
 | Logo | `public/images/ses-logo-original.svg` → run `node scripts/build-logo.mjs` | Generates `components/layout/logo-paths.ts` |
-| Favicon / app icon / social image | `app/icon.svg`, `app/apple-icon.tsx`, `app/opengraph-image.tsx` | |
+| Favicon / app icon / social image / schema logo | `app/icon.svg`, `app/apple-icon.tsx`, `app/opengraph-image.tsx`, `app/logo.png/route.tsx` | The last one is the raster logo for `organizationJsonLd()` (`lib/jsonld.ts`) — Google's structured-data guidelines reject SVG there |
 | Toast styling | `app/layout.tsx` → `<Toaster />` | Only used for "Email copied" + form network errors |
+
+---
+
+## 2026-09-23 · SEO fixes (structured data + a real 301 redirect)
+
+A third round of review, this time SEO-specific. Two of the four items were real and current; the other two
+(`html-sitemap` metadata, the `ArchitectureVisual` dynamic-import) were already fixed in the Phase 4 pass above —
+verified against the live code before touching anything, not just trusted the report.
+
+- **Organization schema logo was SVG:** Google's structured-data guidelines don't accept SVG for
+  `Organization.logo` — only raster. Added `app/logo.png/route.tsx`, a build-time PNG generated the same way
+  `apple-icon.tsx`/`opengraph-image.tsx` already are (`next/og`'s `ImageResponse`, from the same
+  `logo-paths.ts` data — no new asset to hand-maintain, no new dependency). `lib/jsonld.ts`'s
+  `organizationJsonLd()` now points at `/logo.png` instead of the SVG.
+- **Duplicate FAQPage schema across 5 URLs:** `components/ui/Faq.tsx` has always emitted its own `FAQPage`
+  JSON-LD on every page that renders it — `/technology/`, `/technology/architecture/` (partial),
+  `/technology/dlc/` (partial), `/technology/how-it-works/`, and the new `/faq/` — the same questions marked up
+  on multiple different URLs, which Google treats as duplicate structured data. Added a `renderSchema` prop
+  (default `false`); only `app/faq/page.tsx`, the one canonical page for this content, passes `renderSchema`.
+- **Real 301 instead of the meta-refresh stub:** deleted `app/how-it-works/page.tsx` and added `vercel.json`
+  with a 301 `/how-it-works/` → `/technology/how-it-works/` — the host question that blocked this in Phase 3 is
+  resolved (Vercel, confirmed by the original audit's own `ses-omega.vercel.app` build URL).
 
 ---
 
@@ -86,10 +108,9 @@ deliberately-declined rewrites, and two claims that turned out to be stale on re
 - **`scripts/build-logo.mjs`**: flagged as an "orphaned" one-off script since it's not wired into `npm run build`. It's
   meant to be run manually and rarely (regenerate the logo paths when the source SVG changes) — `CHANGELOG.md`'s own
   "Where to change what" table already documents it as the tool for exactly that. Kept.
-- **`app/how-it-works/page.tsx`** (meta-refresh forwarding stub): the audit suggests deleting it in favor of a host
-  redirect. Static export can't do `next.config.ts` redirects, so this depends entirely on the final host — already an
-  open item below. Deleting the stub now, before a host redirect exists, would just break the URL outright. Kept until
-  the host is confirmed.
+- **`app/how-it-works/page.tsx`** (meta-refresh forwarding stub): kept at the time, pending host confirmation. Resolved
+  in the next entry below (host was already known — Vercel, from the original audit's own `ses-omega.vercel.app` build
+  URL) — deleted in favor of a real `vercel.json` 301.
 - **`ScrollStory.tsx` / `LocalNav.tsx` DOM duplication:** looked at refactoring both to a single shared DOM tree.
   `LocalNav`'s second `<ul>` is Emil Kowalski's clip-path active-tab technique — `aria-hidden`, lightweight (nav labels
   only), and a deliberate, well-known pattern; not worth undoing for architecture purity. `ScrollStory`'s desktop
@@ -283,4 +304,3 @@ and there was no scroll-linked opacity fade anywhere in the codebase (`Reveal.ts
   - Integrations page (BMS/CMMS/ServiceChannel/Corrigo/utility programs)
   - Careers page
 - [ ] **Homepage/how-it-works scroll length:** the 2026-09-23 audit flagged this as excessive; conflicts with the site's own "Apple product page" long-scroll brief — needs a decision before anyone touches it.
-- [ ] If the host supports redirects: 301 `/how-it-works/` → `/technology/how-it-works/`.

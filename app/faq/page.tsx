@@ -16,7 +16,7 @@ export default function FaqPage() {
     <>
       <PageHero eyebrow="FAQ" title="Everything you're wondering." subhead="About the DLC, the platform and our managed services." />
       <Section className="pb-24 md:pb-32">
-        <Faq items={items} />
+        <Faq items={items} renderSchema />
       </Section>
     </>
   );

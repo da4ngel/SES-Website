@@ -5,9 +5,24 @@ export type FaqItem = { q: string; a: string };
 /**
  * Native <details> accordion: keyboard and screen-reader support for free, works without JS.
  * Opening animates height where the browser supports ::details-content (see .faq in globals.css);
- * elsewhere it opens instantly. Also emits FAQPage structured data.
+ * elsewhere it opens instantly.
+ *
+ * `renderSchema` defaults to false: this component is used on several pages with overlapping
+ * subsets of the same FAQ content (technology/architecture/dlc/how-it-works), and Google treats
+ * the same FAQPage markup repeated across different URLs as duplicate/spam structured data. Only
+ * the one page that's the real, canonical home for this content (app/faq/page.tsx) opts in.
  */
-export function Faq({ items, id = "faq", title = "Questions, answered." }: { items: FaqItem[]; id?: string; title?: string }) {
+export function Faq({
+  items,
+  id = "faq",
+  title = "Questions, answered.",
+  renderSchema = false,
+}: {
+  items: FaqItem[];
+  id?: string;
+  title?: string;
+  renderSchema?: boolean;
+}) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -37,7 +52,7 @@ export function Faq({ items, id = "faq", title = "Questions, answered." }: { ite
           </details>
         ))}
       </div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {renderSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
     </div>
   );
 }
